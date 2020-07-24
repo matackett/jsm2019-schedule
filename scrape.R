@@ -131,5 +131,5 @@ jsm_talks <- jsm_talks_raw
 # don't need ADDED FEE for 2020
 # mutate(has_fee = str_detect(title, "(ADDED FEE)"))
 
-write_csv(jsm_talks, "app-data/jsm2019_talks.csv")
+write_csv(jsm_talks, "app-data/jsm2020_talks.csv")
 
