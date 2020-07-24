@@ -7,8 +7,8 @@ library(lubridate)
 library(shinythemes)
 
 # Load data ---------------------------------------------------------
-jsm_sessions <- read_csv("app-data/jsm2019_sessions.csv")
-jsm_talks <- read_csv("app-data/jsm2019_talks.csv")
+jsm_sessions <- read_csv("app-data/jsm2020_sessions.csv")
+jsm_talks <- read_csv("app-data/jsm2020_talks.csv")
 
 # Create lists for use later ----------------------------------------
 sponsors <- glue_collapse(jsm_sessions$sponsor, sep = ", ") %>%
@@ -32,12 +32,12 @@ types <- c(
 )
 
 # Set conf start date -----------------------------------------------
-conf_start <- "2019-07-26"
+conf_start <- "2020-08-02"
 
 # UI ----------------------------------------------------------------
 ui <- navbarPage(
   theme = shinytheme("cosmo"),
-  "JSM 2019",
+  "JSM 2020",
   
   # Tab 1: Session schedule -----------------------------------------
   tabPanel("Session Schedule",
@@ -52,13 +52,11 @@ ui <- navbarPage(
                  "day",
                  "Day",
                  choices = c(
-                   "Fri, Jul 26" = "Fri",
-                   "Sat, Jul 27" = "Sat",
-                   "Sun, Jul 28" = "Sun",
-                   "Mon, Jul 29" = "Mon",
-                   "Tue, Jul 30" = "Tue",
-                   "Wed, Jul 31"  = "Wed",
-                   "Thu, Aug 1"  = "Thu"
+                   "Sun, Aug 2" = "Sun",
+                   "Mon, Aug 3" = "Mon",
+                   "Tue, Aug 4" = "Tue",
+                   "Wed, Aug 5" = "Wed",
+                   "Thu, Aug 6" = "Thu",
                  ),
                  # 
                  selected = ifelse(Sys.Date() < conf_start, 
@@ -108,16 +106,16 @@ ui <- navbarPage(
                br(),
                
                
-               # Excluded fee events --------------------------------
-               checkboxInput("exclude_fee",
-                             "Exclude added fee events"),
+               # Excluded fee events (no added fee events in 2020) --------------------------------
+             #  checkboxInput("exclude_fee",
+                       #      "Exclude added fee events"),
                
-               br(),
+             #  br(),
                hr(),
                br(),
                
                # Footnote -------------------------------------------
-               HTML('For the official JSM 2019 website, including conference information, registration for short courses, and an online program with more customization options, visit <a href="https://ww2.amstat.org/meetings/jsm/2019/onlineprogram/index.cfm">here</a>.'),
+               HTML('For the official JSM 2020 website, including conference information, registration for short courses, and an online program with more customization options, visit <a href="https://ww2.amstat.org/meetings/jsm/2020/onlineprogram/index.cfm">here</a>.'),
                
                width = 3
                
@@ -161,16 +159,16 @@ ui <- navbarPage(
                
                br(),
                
-               # Excluded fee events --------------------------------
-               checkboxInput("exclude_fee",
-                             "Exclude added fee events"),
+               # Excluded fee events (no added fee events in 2020)--------------------------------
+               #checkboxInput("exclude_fee",
+               #              "Exclude added fee events"),
                
-               br(),
+              # br(),
                hr(),
                br(),
                
                # Footnote -------------------------------------------
-               HTML('For the official JSM 2019 website, including conference information, registration for short courses, and an online program with more customization options, visit <a href="https://ww2.amstat.org/meetings/jsm/2019/onlineprogram/index.cfm">here</a>.')
+               HTML('For the official JSM 2020 website, including conference information, registration for short courses, and an online program with more customization options, visit <a href="https://ww2.amstat.org/meetings/jsm/2020/onlineprogram/index.cfm">here</a>.')
                
              ),
              
@@ -199,9 +197,9 @@ server <- function(input, output) {
       session_type <- types
     
     # Exclude fee events --------------------------------------------
-    if (input$exclude_fee) {
-      jsm_sessions <- jsm_sessions %>% filter(has_fee == FALSE)
-    }
+  #  if (input$exclude_fee) {
+  #    jsm_sessions <- jsm_sessions %>% filter(has_fee == FALSE)
+  #  }
     
     # Add session title filter
     keywords <- input$session_keyword_text %>%
@@ -251,9 +249,9 @@ server <- function(input, output) {
   # Talks -----------------------------------------------------------
   output$talks <- DT::renderDataTable({
     # Exclude fee events
-    if (input$exclude_fee) {
-      jsm_talks <- jsm_talks %>% filter(has_fee == FALSE)
-    }
+   # if (input$exclude_fee) {
+   #   jsm_talks <- jsm_talks %>% filter(has_fee == FALSE)
+   # }
     
     # Create pattern
     keywords <- input$keyword_text %>%
