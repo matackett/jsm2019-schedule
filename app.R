@@ -56,7 +56,7 @@ ui <- navbarPage(
                    "Mon, Aug 3" = "Mon",
                    "Tue, Aug 4" = "Tue",
                    "Wed, Aug 5" = "Wed",
-                   "Thu, Aug 6" = "Thu",
+                   "Thu, Aug 6" = "Thu"
                  ),
                  # 
                  selected = ifelse(Sys.Date() < conf_start, 
