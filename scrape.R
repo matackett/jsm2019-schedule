@@ -4,12 +4,12 @@ library(rvest)
 library(glue)
 
 # read data ---------------------------------------------------------
-jsm2019_html <- read_html("raw-data/jsm2019.htm")
-jsm_html <- jsm2019_html
+jsm2020_html <- read_html("raw-data/jsm2020.htm")
+jsm_html <- jsm2020_html
 
 # read pd data ---------------------------------------------------------
-jsm2019_pd_html <- read_html("raw-data/jsm2019-pd.htm")
-jsm_pd_html <- jsm2019_pd_html
+#jsm2019_pd_html <- read_html("raw-data/jsm2019-pd.htm")
+#jsm_pd_html <- jsm2019_pd_html
 
 # scrape session schedule -------------------------------------------
 
@@ -18,6 +18,7 @@ dates_times <- jsm_html %>%
   html_text() %>%
   trim() %>%
   str_replace_all("\n", " ") %>%
+  str_replace_all("\r", " ") %>%
   str_trim()
 
 locations <- jsm_html %>%
@@ -56,7 +57,7 @@ jsm_sessions_raw <- tibble(
 )
 
 # get professional development URLs --------------------------------------------
-
+# NO pd in 2020
 pd_sessions <- jsm_pd_html %>%
   html_nodes("tr:nth-child(2) b") %>%
   html_text() %>%
@@ -79,9 +80,9 @@ jsm_sessions <- jsm_sessions_raw %>%
   separate(time, into = c("beg_time", "end_time"), sep = " - ", remove = FALSE) %>%
   separate(session_type, into = c("session", "type"), sep = " \u2014 ") %>%
   # manual fixes
-  mutate(
+   mutate(
     # has fee
-    has_fee = str_detect(session, "(ADDED FEE)"),
+    #has_fee = str_detect(session, "(ADDED FEE)"),
     # reduce type levels
     type = case_when(
       str_detect(type, "Roundtable")               ~ "Roundtable",
@@ -92,7 +93,7 @@ jsm_sessions <- jsm_sessions_raw %>%
     # compose URLs
     url = case_when(
       type == "Professional Development"           ~ NA_character_,
-      type == "Roundtable"                         ~ "https://ww2.amstat.org/meetings/jsm/2019/onlineprogram/index.cfm",
+      type == "Roundtable"                         ~ "https://ww2.amstat.org/meetings/jsm/2020/onlineprogram/index.cfm",
       TRUE                                         ~ url
     ),
     # civilian to military time
@@ -103,12 +104,12 @@ jsm_sessions <- jsm_sessions_raw %>%
     end_time_round = ifelse(id == "218966", 23, end_time_round)
   ) %>%
   # fix prof dev URLs
-  left_join(pd, by = "session") %>%
-  mutate(url = ifelse(is.na(url.x) , url.y, url.x)) %>%
-  # select columns
-  select(day, date, time, beg_time, end_time, location, id, session, type, url, sponsor, has_fee, beg_time_round, end_time_round)
+  #left_join(pd, by = "session") %>%
+ # mutate(url = ifelse(is.na(url.x) , url.y, url.x)) %>%
+  # select columns - removed has_fee in 2020 code
+  select(day, date, time, beg_time, end_time, location, id, session, type, url, sponsor, beg_time_round, end_time_round)
 
-write_csv(jsm_sessions, path = "app-data/jsm2019_sessions.csv")
+write_csv(jsm_sessions, path = "app-data/jsm2020_sessions.csv")
 
 # scrape talk info -------------------------------------------------
 
@@ -125,8 +126,10 @@ jsm_talks_raw <- tibble(
   url = urls
 )
 
-jsm_talks <- jsm_talks_raw %>%
-  mutate(has_fee = str_detect(title, "(ADDED FEE)"))
+jsm_talks <- jsm_talks_raw 
+
+# don't need ADDED FEE for 2020
+# mutate(has_fee = str_detect(title, "(ADDED FEE)"))
 
 write_csv(jsm_talks, "app-data/jsm2019_talks.csv")
 
